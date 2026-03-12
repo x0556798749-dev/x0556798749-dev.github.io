@@ -10,10 +10,14 @@ const firebaseConfig = {
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+import { initializeFirestore, getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
-const dataBase = getFirestore(app);
+
+/*const dataBase = getFirestore(app);*/
+const dataBase = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+});
 
 window.saveData = async function (dataObject, Collection, DocumentData) {
     try {
