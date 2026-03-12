@@ -1,8 +1,15 @@
 
+let userID = 1;
+function donorsToJSON(donors) {
+    return JSON.stringify(donors, null, 2);
+}
+function getDonorsObject() {
+    return { userID: donors };
+}
 
-function exportToJSON(contacts) {
-    // המרת המערך למחרוזת JSON עם רווחים לקריאות (נוח לבדיקה)
-    const jsonData = JSON.stringify(contacts, null, 2);
+function exportToJSON(donors) {
+    
+    const jsonData = donorsToJSON(donors);
 
     // יצירת Blob והורדה (בדומה ל-CSV)
     const blob = new Blob([jsonData], { type: 'application/json' });
@@ -27,7 +34,6 @@ function loadFromJSON(jsonString) {
             renderTable();           // ריענון הטבלה במסך
             if (typeof updateCharts === 'function') updateCharts(); // ריענון גרפים אם קיימים
             alert("הנתונים נטענו בהצלחה!");
-            alert(contacts.importedData)
         }
     } catch (e) {
         console.error("שגיאה בטעינת הנתונים:", e);
@@ -74,8 +80,30 @@ function openJSONFilePicker() {
     fileInput.click();
 }
 
-function userSave() {
-    const myTableData = { info: "some data from table" };
+async function userSave() {
+    const dataToSave = getDonorsObject();
+    await window.saveData(dataToSave, "testFiles", "test");
+}
 
-    window.saveData(getTableDataAsJSON(), "testFiles", "test");
+async function userLoad() {
+    try {
+        // קריאה לפונקציית ה-window של פיירבייס
+        const result = await window.loadData("testFiles", "test");
+
+        if (result && result.userID) {
+            // עדכון המשתנה הגלובלי (השתמשנו ב-userID כי כך זה נשמר ב-getDonorsObject)
+            donors = result.userID;
+
+            // עדכון התצוגה
+            renderTable();
+            if (typeof updateCharts === 'function') updateCharts();
+            if (typeof renderRecent === 'function') renderRecent();
+
+            alert("הנתונים נטענו בהצלחה מהענן!");
+        } else {
+            alert("לא נמצאו נתונים לטעינה.");
+        }
+    } catch (e) {
+        alert("שגיאה בתהליך הטעינה:", e);
+    }
 }

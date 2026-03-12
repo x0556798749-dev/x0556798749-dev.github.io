@@ -1,8 +1,3 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
-const dataBase = getFirestore(app);
-
 const firebaseConfig = {
     apiKey: "AIzaSyDQKHEeqaVGHNrB9jGMnTrZtQJSZ6WcF4I",
     authDomain: "donor-project-df881.firebaseapp.com",
@@ -13,12 +8,20 @@ const firebaseConfig = {
     measurementId: "G-6JPN9HL31W"
 };
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const dataBase = getFirestore(app);
+
 window.saveData = async function (dataObject, Collection, DocumentData) {
     try {
         await setDoc(doc(dataBase, Collection, DocumentData), dataObject);
-        console.log("הנתונים נשמרו בהצלחה!");
+        alert("הנתונים נשמרו בהצלחה!");
     } catch (e) {
         console.error("שגיאה בשמירה: ", e);
+        alert("שגיאה בשמירה, בדוק את הקונסול.");
     }
 }
 

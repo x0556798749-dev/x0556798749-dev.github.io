@@ -608,8 +608,14 @@ body::before {
     </div>
     <button class="btn btn-gold btn-sm" onclick="openAddModal()">+ תורם חדש</button>
     <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📊 CSV</button>
-    <button class="btn btn-ghost btn-sm" onclick="exportToJSON(donors)">שמירת json</button>
-    <button class="btn btn-ghost btn-sm" onclick="openJSONFilePicker()">בחירת json</button>
+      <!---JSON---->
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <span style="font-size: 0.9rem; font-weight: bold;">ניהול נתונים:</span>
+        <button class="btn btn-outline btn-sm" onclick="userSave()">גיבוי ענן</button>
+        <button class="btn btn-outline btn-sm" onclick="userLoad()">טעינה מענן</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportToJSON(donors)">ייצוא קובץ</button>
+        <button class="btn btn-ghost btn-sm" onclick="openJSONFilePicker()">ייבוא קובץ</button>
+    </div>
   </div>
 
   <div class="content">
