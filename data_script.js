@@ -1,80 +1,77 @@
 
-function addRow() {
-    const table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
 
-    // 1. מציאת השורה האחרונה הקיימת
-    const lastRow = table.rows[table.rows.length - 1];
+function exportToJSON(contacts) {
+    // המרת המערך למחרוזת JSON עם רווחים לקריאות (נוח לבדיקה)
+    const jsonData = JSON.stringify(contacts, null, 2);
 
-    // 2. שיכפול השורה (true אומר לשכפל גם את כל מה שבתוכה)
-    const newRow = lastRow.cloneNode(true);
+    // יצירת Blob והורדה (בדומה ל-CSV)
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "crm_data_backup.json");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
-    // 3. ניקוי הערכים בשורה החדשה כדי שלא תהיה כפילות של מידע
-    const inputs = newRow.querySelectorAll('input');
-    inputs.forEach(input => {
-        if (input.type === 'checkbox') {
-            input.checked = false; // איפוס תיבת סימון
-        } else {
-            input.value = ""; // איפוס תאריך או טקסט
+function loadFromJSON(jsonString) {
+    try {
+        const importedData = JSON.parse(jsonString);
+
+        // בדיקה בסיסית שהנתונים הם אכן מערך
+        if (Array.isArray(importedData)) {
+            contacts = importedData; // עדכון המערך הגלובלי
+            donors = importedData;
+            renderTable();           // ריענון הטבלה במסך
+            if (typeof updateCharts === 'function') updateCharts(); // ריענון גרפים אם קיימים
+            alert("הנתונים נטענו בהצלחה!");
+            alert(contacts.importedData)
         }
-    });
-
-    const cells = newRow.querySelectorAll('td[contenteditable="true"]');
-    cells.forEach(cell => {
-        cell.innerText = "-"; // איפוס תאי טקסט עריצים
-    });
-
-    // 4. הוספת השורה המשוכפלת לסוף הטבלה
-    table.appendChild(newRow);
-
-    // 5. אם יש לך פונקציית שמירה, נקרא לה כאן
-    if (typeof saveTable === "function") {
-        saveTable();
+    } catch (e) {
+        console.error("שגיאה בטעינת הנתונים:", e);
+        alert("קובץ לא תקין.");
     }
 }
 
-function getTableDataAsJSON() {
-    const table = document.getElementById("data-table").getElementsByTagName('tbody')[0];
-    const rows = Array.from(table.rows);
+function openJSONFilePicker() {
+    // יצירת אלמנט קלט של קובץ באופן דינמי
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json, application/json'; // הגבלה לבחירת קובצי JSON בלבד
 
-    const data = rows.map(row => {
-        return {
-            firstName: row.cells[0].innerText,
-            lastName: row.cells[1].innerText,
-            address: row.cells[2].innerText,
-            phone: row.cells[3].innerText,
-            email: row.cells[4].innerText,
-            connection: row.cells[5].innerText,
-            isBuger: row.cells[6].querySelector('input').checked,
-            graduationDate: row.cells[7].querySelector('input').value
+    // האזנה לאירוע בחירת הקובץ
+    fileInput.addEventListener('change', function (event) {
+        const file = event.target.files[0];
+
+        // אם המשתמש סגר את החלון בלי לבחור קובץ
+        if (!file) {
+            return;
+        }
+
+        // יצירת קורא קבצים
+        const reader = new FileReader();
+
+        // מה קורה כשהקריאה מסתיימת בהצלחה
+        reader.onload = function (e) {
+            const jsonString = e.target.result;
+            // קריאה לפונקציה שלך עם המחרוזת שנקראה מהקובץ
+            loadFromJSON(jsonString);
         };
+
+        // מה קורה במקרה של שגיאה בקריאת הקובץ (למשל קובץ פגום)
+        reader.onerror = function () {
+            console.error("שגיאה בקריאת הקובץ");
+            alert("אירעה שגיאה בקריאת הקובץ מהמחשב.");
+        };
+
+        // התחלת קריאת הקובץ כטקסט
+        reader.readAsText(file);
     });
 
-    return data;
-}
-
-function loadTableData(dataArray) {
-    const tableBody = document.getElementById("data-table").getElementsByTagName('tbody')[0];
-
-    // 1. ניקוי הטבלה הקיימת לפני הטעינה
-    tableBody.innerHTML = "";
-
-    // 2. מעבר על כל אובייקט במערך ויצירת שורה
-    dataArray.forEach(item => {
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td contenteditable="true">${item.firstName || ""}</td>
-            <td contenteditable="true">${item.lastName || ""}</td>
-            <td contenteditable="true">${item.address || ""}</td>
-            <td contenteditable="true">${item.phone || ""}</td>
-            <td contenteditable="true">${item.email || ""}</td>
-            <td contenteditable="true">${item.connection || ""}</td>
-            <td><input type="checkbox" ${item.isAlumni ? "checked" : ""}></td>
-            <td><input type="date" value="${item.graduationDate || ""}"></td>
-        `;
-
-        tableBody.appendChild(row);
-    });
+    // פתיחת חלון בחירת הקבצים
+    fileInput.click();
 }
 
 function userSave() {

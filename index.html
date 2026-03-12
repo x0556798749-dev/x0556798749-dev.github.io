@@ -6,6 +6,8 @@
 <title>ישיבת מן ההר — CRM Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@200;300;400;700;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="data_script.js"></script>
+<script type="module" src="fireBaseScript.js"></script>
 <style>
 :root {
   --bg: #f0f4fa;
@@ -606,6 +608,8 @@ body::before {
     </div>
     <button class="btn btn-gold btn-sm" onclick="openAddModal()">+ תורם חדש</button>
     <button class="btn btn-ghost btn-sm" onclick="exportCSV()">📊 CSV</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportToJSON(donors)">שמירת json</button>
+    <button class="btn btn-ghost btn-sm" onclick="openJSONFilePicker()">בחירת json</button>
   </div>
 
   <div class="content">
